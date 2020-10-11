@@ -15,7 +15,7 @@ import (
 
 type observe struct {
 	webserver *echo.Echo
-	ttsHandle *tts_handle
+	ttsHandle *ttsHandle
 }
 
 type observer interface {
@@ -26,7 +26,7 @@ type observer interface {
 func NewObserve() *observe {
 	return &observe{
 		webserver: echo.New(),
-		ttsHandle: &tts_handle{},
+		ttsHandle: &ttsHandle{},
 	}
 }
 

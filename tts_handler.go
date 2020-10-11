@@ -16,13 +16,13 @@ import (
 	texttospeech "cloud.google.com/go/texttospeech/apiv1"
 )
 
-type tts_handle struct {
+type ttsHandle struct {
 }
-type tts_handler interface {
+type ttsHandler interface {
 	play(text string) error
 }
 
-func (t *tts_handle) play(text string) error {
+func (t *ttsHandle) play(text string) error {
 
 	f, err := t.request(text)
 
@@ -50,7 +50,7 @@ func (t *tts_handle) play(text string) error {
 	return nil
 }
 
-func (t *tts_handle) request(text string) (*bytes.Buffer, error) {
+func (t *ttsHandle) request(text string) (*bytes.Buffer, error) {
 
 	ctx := context.Background()
 
