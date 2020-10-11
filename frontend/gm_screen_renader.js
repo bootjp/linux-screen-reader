@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name            Selection Text Reader
 // @namespace       https://bootjp.me/
-// @description     Context menu to execute UserScript
+// @description     Read the selected text from the context menu with the goolge text to speech API
 // @version         0.1
 // @author          bootjp
 // @include         *
 // @grant           GM_xmlhttpRequest
 // @grant           GM_setClipboard
 // @run-at          context-menu
-// ==/UserScript==]
+// ==/UserScript==
 
 (function () {
     'use strict';
