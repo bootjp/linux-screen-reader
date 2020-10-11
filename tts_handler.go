@@ -3,7 +3,6 @@ package google_tts_screenreader
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"log"
 	"time"
 
@@ -28,6 +27,15 @@ func (t *ttsHandle) play(text string) error {
 
 	streamer, format, err := wav.Decode(f)
 	if err != nil {
+		log.Println(text)
+
+		// todo エラーファイルを収集すする
+		//f, err := ioutil.TempFile("/tmp/", "tts-error-data")
+		//if err == nil {
+		//	// todo エラーファイルを収集する
+		//	// bytes.ioutil.WriteFile(f.Name(), f, 644)
+		//}
+
 		log.Println(err)
 	}
 	defer func() {
@@ -38,6 +46,7 @@ func (t *ttsHandle) play(text string) error {
 
 	err = speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
 	if err != nil {
+		log.Println(text)
 		log.Println(err)
 		return err
 	}
@@ -70,16 +79,16 @@ func (t *ttsHandle) request(text string) (*bytes.Buffer, error) {
 		},
 		AudioConfig: &texttospeechpb.AudioConfig{
 			AudioEncoding: texttospeechpb.AudioEncoding_LINEAR16,
+			SpeakingRate:  1.12,
 		},
 	}
 
 	resp, err := client.SynthesizeSpeech(ctx, &req)
 	if err != nil {
+		log.Println(text)
 		log.Println(err)
 		return nil, err
 	}
-
-	fmt.Println("played")
 
 	return bytes.NewBuffer(resp.AudioContent), nil
 }

@@ -1,7 +1,6 @@
 package google_tts_screenreader
 
 import (
-	"fmt"
 	"log"
 	"os/exec"
 	"strings"
@@ -69,10 +68,7 @@ func (o *observe) clipboard() {
 		if lastText == text {
 			continue
 		}
-		fmt.Println("last: "+lastText, "current: "+text)
 		lastText = text
-
-		fmt.Println("clipboard ", text)
 
 		err = o.ttsHandle.play(text)
 		if err != nil {
@@ -87,13 +83,10 @@ func (o observe) rest() {
 	o.webserver.POST("/tts/speech", func(c echo.Context) error {
 		text := c.FormValue("text")
 
-		fmt.Println(text)
-
 		if err := o.ttsHandle.play(text); err != nil {
 			log.Println(err)
 		}
 
-		fmt.Println("played")
 		return nil
 	})
 
