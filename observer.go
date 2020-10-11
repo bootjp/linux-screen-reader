@@ -84,7 +84,7 @@ func (o *observe) clipboard() {
 func (o observe) rest() {
 
 	o.webserver.Use(middleware.Recover())
-	o.webserver.POST("/", func(c echo.Context) error {
+	o.webserver.POST("/tts/speech", func(c echo.Context) error {
 		text := c.FormValue("text")
 
 		fmt.Println(text)
