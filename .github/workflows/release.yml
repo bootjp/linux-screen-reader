@@ -34,7 +34,7 @@ jobs:
           GOARCH: amd64
         run: |
           mkdir dist
-          go build -o ./dist/google-tts-screenreader ./cmd/
+          go build -o ./dist/google-tts-screenreader ./
 
       - name: Achive to zip
         run: |
