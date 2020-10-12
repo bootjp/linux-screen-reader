@@ -11,8 +11,6 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-
-
       - name: Set up Go 1.15
         uses: actions/setup-go@v1
         with:
@@ -26,6 +24,8 @@ jobs:
         env:
           GO111MODULE: on
         run: |
+          sudo apt -y update
+          sudo apt -y install libasound2-dev
           go mod download
 
       - name: Build as binary
