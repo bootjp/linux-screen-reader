@@ -38,7 +38,7 @@ jobs:
 
       - name: Achive to zip
         run: |
-          tar -zcf dist/google-tts-screenreader.tar.gz
+          tar -zcf dist/google-tts-screenreader.tar.gz ./dist/google-tts-screenreader
 
       - name: Release
         uses: softprops/action-gh-release@v1
