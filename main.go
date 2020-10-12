@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	reader "github.com/bootjp/linux-screen-reader"
+	reader "github.com/bootjp/linux-screen-reader/components"
 )
 
 func main() {
