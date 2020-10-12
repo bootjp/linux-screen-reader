@@ -1,4 +1,4 @@
-package google_tts_screenreader
+package linux_screen_reader
 
 import (
 	"bytes"

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	reader "github.com/bootjp/google-tts-screenreader"
+	reader "github.com/bootjp/linux-screen-reader"
 )
 
 func main() {

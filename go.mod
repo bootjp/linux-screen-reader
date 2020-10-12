@@ -1,4 +1,4 @@
-module github.com/bootjp/google-tts-screenreader
+module github.com/bootjp/linux-screen-reader
 
 go 1.15
 
