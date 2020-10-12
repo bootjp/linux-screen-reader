@@ -1,0 +1,52 @@
+name: Go
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+
+      - name: Set up Go 1.15
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.15
+        id: go
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v1
+
+      - name: Get dependencies
+        env:
+          GO111MODULE: on
+        run: |
+          go get -v -t -d ./...
+
+      - name: Test
+        run: go test -v ./...
+
+      - name: Build as binary
+        env:
+          GOOS: linux
+          GOARCH: amd64
+        run: |
+          mkdir dist
+          go build -o ./dist/google-tts-screenreader ./cmd/
+
+      - name: Achive to zip
+        run: |
+          tar -zcf dist/google-tts-screenreader.tar.gz
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: "dist/google-tts-screenreader.tar.gz"
+          prerelease: ${{ contains(github.ref, '-beta') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

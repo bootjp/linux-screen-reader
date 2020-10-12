@@ -1,7 +1,9 @@
 package google_tts_screenreader
 
 import (
+	"fmt"
 	"log"
+	"os"
 	"os/exec"
 	"strings"
 	"sync"
@@ -29,6 +31,13 @@ func NewObserve() *observe {
 	}
 }
 
+var unSupported bool
+
+func init() {
+	_, err := os.Stat("/usr/local/bin/clipnotify")
+	unSupported = err != nil
+}
+
 func (o *observe) Close() error {
 
 	err := o.webserver.Close()
@@ -41,10 +50,17 @@ func (o *observe) Close() error {
 const ClipboardPrefix = "--screen_reader "
 
 func (o *observe) clipboard() {
+
+	if unSupported {
+		fmt.Println("clipnotify is not found. please install")
+		fmt.Println("disabling clipboard observe.")
+		return
+	}
+
 	lastText := ""
 	for {
 
-		c := exec.Command("./bin/clipnotify")
+		c := exec.Command("/usr/local/bin/clipnotify")
 		err := c.Start()
 		if err != nil {
 			log.Println(err)
@@ -79,6 +95,7 @@ func (o *observe) clipboard() {
 
 func (o observe) rest() {
 
+	o.webserver.HideBanner = true
 	o.webserver.Use(middleware.Recover())
 	o.webserver.POST("/tts/speech", func(c echo.Context) error {
 		text := c.FormValue("text")
