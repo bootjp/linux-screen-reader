@@ -1,13 +1,17 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	reader "github.com/bootjp/google-tts-screenreader"
 )
 
 func main() {
-	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "/home/bootjp/bootjp-labs-5f1ff5ec3ac7.json")
-	reader.NewObserve().Run()
+	if e := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"); e == "" {
+		fmt.Println("require environment GOOGLE_APPLICATION_CREDENTIALS")
+		os.Exit(1)
+	}
 
+	reader.NewObserve().Run()
 }
