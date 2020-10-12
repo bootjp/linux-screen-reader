@@ -12,9 +12,13 @@ APIはhttpサーバーとクリップボード監視で読み上げる文章を�
 
 ## 依存関係
 
-`go.mod` 及び `bin/clipnotify` 
+### 実行時
 
-[`clipnotify`](https://github.com/cdown/clipnotify) は public domain のバイナリを同梱
+* `alsa-lib` or `libasound2-dev`
+* [`clipnotify`](https://github.com/cdown/clipnotify) 
+
+### 開発時
+* `go mod download` 
 
 ## 実行
-
+* go run ./cmd or binary download by release page
