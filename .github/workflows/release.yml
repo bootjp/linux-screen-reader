@@ -20,7 +20,7 @@ jobs:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v1
 
-      - name: Get dependencies
+      - name: Fetch dependencies
         env:
           GO111MODULE: on
         run: |
