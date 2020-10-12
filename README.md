@@ -21,4 +21,6 @@ APIはhttpサーバーとクリップボード監視で読み上げる文章を�
 * `go mod download` 
 
 ## 実行
+* setup gcp credential, and environment `GOOGLE_APPLICATION_CREDENTIALS`
 * go run ./cmd or binary download by release page
+* and install frontend userscript or bookmarklet
