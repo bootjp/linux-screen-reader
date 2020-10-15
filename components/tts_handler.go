@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"log"
+	"sync"
 	"time"
 
 	"github.com/faiface/beep"
@@ -16,9 +17,16 @@ import (
 )
 
 type ttsHandle struct {
+	mu *sync.Mutex
 }
 type ttsHandler interface {
 	play(text string) error
+}
+
+func NewTTSHandle() *ttsHandle {
+	return &ttsHandle{
+		mu: &sync.Mutex{},
+	}
 }
 
 func (t *ttsHandle) play(text string) error {
@@ -38,6 +46,9 @@ func (t *ttsHandle) play(text string) error {
 
 		log.Println(err)
 	}
+
+	t.mu.Lock()
+	defer t.mu.Unlock()
 	defer func() {
 		_ = streamer.Close()
 	}()
