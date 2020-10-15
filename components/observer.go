@@ -42,7 +42,7 @@ func (o *observe) Close() error {
 
 	err := o.webserver.Close()
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 	}
 	return err
 }
@@ -63,16 +63,16 @@ func (o *observe) clipboard() {
 		c := exec.Command("/usr/local/bin/clipnotify")
 		err := c.Start()
 		if err != nil {
-			log.Println(err)
+			log.Fatal(err)
 		}
 		err = c.Wait()
 		if err != nil {
-			log.Println(err)
+			log.Fatal(err)
 		}
 
 		text, err := clipboard.ReadAll()
 		if err != nil {
-			log.Println(err)
+			fmt.Println(err)
 		}
 
 		if !strings.HasPrefix(text, ClipboardPrefix) {
@@ -88,7 +88,7 @@ func (o *observe) clipboard() {
 
 		err = o.ttsHandle.play(text)
 		if err != nil {
-			log.Println(err)
+			fmt.Println(err)
 		}
 	}
 }
@@ -101,14 +101,14 @@ func (o observe) rest() {
 		text := c.FormValue("text")
 
 		if err := o.ttsHandle.play(text); err != nil {
-			log.Println(err)
+			fmt.Println(err)
 		}
 
 		return nil
 	})
 
 	if err := o.webserver.Start(":50500"); err != nil {
-		log.Println(err)
+		log.Fatal(err)
 	}
 }
 

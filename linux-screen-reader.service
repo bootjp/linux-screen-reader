@@ -1,10 +1,12 @@
 [Unit]
-Description = We provide a screen reader using google text to speech in the Linux desktop.
+Description=We provide a screen reader using google text to speech in the Linux desktop.
 
 [Service]
-Environment = GOPATH=/home/bootjp/go
-Environment = GOOGLE_APPLICATION_CREDENTIALS=~/.secret/gcp.json
-ExecStart = $GOPATH/bin/linux-screen-reader
-Restart = always
-Type = simple
-
+Environment="GOOGLE_APPLICATION_CREDENTIALS=~/.secret/gcp.json"
+Environment="XDG_RUNTIME_DIR=/run/user/1000"
+Environment="DISPLAY=:0"
+Environment="GOOGLE_APPLICATION_CREDENTIALS=/home/bootjp/.secret/gcp.json"
+ExecStart=/home/bootjp/go/bin/linux-screen-reader
+Restart=always
+Type=simple
+User=bootjp
