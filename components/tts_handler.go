@@ -3,6 +3,8 @@ package linux_screen_reader
 import (
 	"bytes"
 	"context"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"sync"
 	"time"
@@ -35,16 +37,16 @@ func (t *ttsHandle) play(text string) error {
 
 	streamer, format, err := wav.Decode(f)
 	if err != nil {
-		log.Println(text)
+		e := err
+		fmt.Println("occurrence error data: " + text)
+		fmt.Println("catch error : ", err)
 
-		// todo エラーファイルを収集すする
-		//f, err := ioutil.TempFile("/tmp/", "tts-error-data")
-		//if err == nil {
-		//	// todo エラーファイルを収集する
-		//	// bytes.ioutil.WriteFile(f.Name(), f, 644)
-		//}
-
-		log.Println(err)
+		tmpf, err := ioutil.TempFile("/tmp/", "tts-error-data")
+		if err == nil {
+			_ = ioutil.WriteFile(tmpf.Name(), f.Bytes(), 644)
+			_ = tmpf.Close()
+		}
+		return e
 	}
 
 	t.mu.Lock()
