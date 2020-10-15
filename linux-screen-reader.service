@@ -2,7 +2,6 @@
 Description=We provide a screen reader using google text to speech in the Linux desktop.
 
 [Service]
-Environment="GOOGLE_APPLICATION_CREDENTIALS=~/.secret/gcp.json"
 Environment="XDG_RUNTIME_DIR=/run/user/1000"
 Environment="DISPLAY=:0"
 Environment="GOOGLE_APPLICATION_CREDENTIALS=/home/bootjp/.secret/gcp.json"
