@@ -12,14 +12,13 @@ import (
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/speaker"
 	"github.com/faiface/beep/wav"
-
 	texttospeechpb "google.golang.org/genproto/googleapis/cloud/texttospeech/v1"
 
 	texttospeech "cloud.google.com/go/texttospeech/apiv1"
 )
 
 type ttsHandle struct {
-	mu *sync.Mutex
+	mu sync.Mutex
 }
 type ttsHandler interface {
 	play(text string) error
@@ -27,13 +26,19 @@ type ttsHandler interface {
 
 func NewTTSHandle() *ttsHandle {
 	return &ttsHandle{
-		mu: &sync.Mutex{},
+		mu: sync.Mutex{},
 	}
 }
 
 func (t *ttsHandle) play(text string) error {
 
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
 	f, err := t.request(text)
+	if err != nil {
+		return err
+	}
 
 	streamer, format, err := wav.Decode(f)
 	if err != nil {
@@ -49,10 +54,10 @@ func (t *ttsHandle) play(text string) error {
 		return e
 	}
 
-	t.mu.Lock()
-	defer t.mu.Unlock()
 	defer func() {
-		_ = streamer.Close()
+		if err = streamer.Close(); err != nil {
+			fmt.Println(err)
+		}
 	}()
 
 	done := make(chan bool)
