@@ -7,7 +7,6 @@ require (
 	github.com/atotto/clipboard v0.1.2
 	github.com/faiface/beep v1.0.2
 	github.com/hajimehoshi/oto v0.6.5 // indirect
-	github.com/jfreymuth/oggvorbis v1.0.1 // indirect
 	github.com/labstack/echo/v4 v4.1.17
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/pkg/errors v0.9.1 // indirect

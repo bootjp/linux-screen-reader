@@ -4,21 +4,23 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"sync"
 	"time"
 
+	"github.com/faiface/beep/wav"
+
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/speaker"
-	"github.com/faiface/beep/wav"
+
 	texttospeechpb "google.golang.org/genproto/googleapis/cloud/texttospeech/v1"
 
 	texttospeech "cloud.google.com/go/texttospeech/apiv1"
 )
 
 type ttsHandle struct {
-	mu sync.Mutex
+	mu   sync.Mutex
+	init bool
 }
 type ttsHandler interface {
 	play(text string) error
@@ -32,26 +34,19 @@ func NewTTSHandle() *ttsHandle {
 
 func (t *ttsHandle) play(text string) error {
 
-	t.mu.Lock()
-	defer t.mu.Unlock()
-
 	f, err := t.request(text)
 	if err != nil {
 		return err
 	}
 
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
 	streamer, format, err := wav.Decode(f)
 	if err != nil {
-		e := err
 		fmt.Println("occurrence error data: " + text)
 		fmt.Println("catch error : ", err)
-
-		tmpf, err := ioutil.TempFile("/tmp/", "tts-error-data")
-		if err == nil {
-			_ = ioutil.WriteFile(tmpf.Name(), f.Bytes(), 644)
-			_ = tmpf.Close()
-		}
-		return e
+		return err
 	}
 
 	defer func() {
@@ -60,19 +55,23 @@ func (t *ttsHandle) play(text string) error {
 		}
 	}()
 
-	done := make(chan bool)
-
-	err = speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
-	if err != nil {
-		log.Println(text)
-		log.Println(err)
-		return err
+	if !t.init {
+		err = speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
+		if err != nil {
+			log.Println(text)
+			log.Println(err)
+			return err
+		}
+		t.init = true
 	}
 
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
 	speaker.Play(beep.Seq(streamer, beep.Callback(func() {
-		done <- true
+		time.Sleep(1 * time.Second)
+		wg.Done()
 	})))
-	<-done
+	wg.Wait()
 
 	return nil
 }
