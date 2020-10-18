@@ -4,14 +4,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"sync"
 	"time"
 
+	"github.com/faiface/beep/wav"
+
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/speaker"
-	"github.com/faiface/beep/wav"
 
 	texttospeechpb "google.golang.org/genproto/googleapis/cloud/texttospeech/v1"
 
@@ -19,7 +19,8 @@ import (
 )
 
 type ttsHandle struct {
-	mu *sync.Mutex
+	mu   sync.Mutex
+	init bool
 }
 type ttsHandler interface {
 	play(text string) error
@@ -27,47 +28,50 @@ type ttsHandler interface {
 
 func NewTTSHandle() *ttsHandle {
 	return &ttsHandle{
-		mu: &sync.Mutex{},
+		mu: sync.Mutex{},
 	}
 }
 
 func (t *ttsHandle) play(text string) error {
 
 	f, err := t.request(text)
-
-	streamer, format, err := wav.Decode(f)
 	if err != nil {
-		e := err
-		fmt.Println("occurrence error data: " + text)
-		fmt.Println("catch error : ", err)
-
-		tmpf, err := ioutil.TempFile("/tmp/", "tts-error-data")
-		if err == nil {
-			_ = ioutil.WriteFile(tmpf.Name(), f.Bytes(), 644)
-			_ = tmpf.Close()
-		}
-		return e
+		return err
 	}
 
 	t.mu.Lock()
 	defer t.mu.Unlock()
-	defer func() {
-		_ = streamer.Close()
-	}()
 
-	done := make(chan bool)
-
-	err = speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
+	streamer, format, err := wav.Decode(f)
 	if err != nil {
-		log.Println(text)
-		log.Println(err)
+		fmt.Println("occurrence error data: " + text)
+		fmt.Println("catch error : ", err)
 		return err
 	}
 
+	defer func() {
+		if err = streamer.Close(); err != nil {
+			fmt.Println(err)
+		}
+	}()
+
+	if !t.init {
+		err = speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
+		if err != nil {
+			log.Println(text)
+			log.Println(err)
+			return err
+		}
+		t.init = true
+	}
+
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
 	speaker.Play(beep.Seq(streamer, beep.Callback(func() {
-		done <- true
+		time.Sleep(1 * time.Second)
+		wg.Done()
 	})))
-	<-done
+	wg.Wait()
 
 	return nil
 }

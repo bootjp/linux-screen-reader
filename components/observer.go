@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/atotto/clipboard"
 
@@ -27,7 +28,7 @@ type observer interface {
 func NewObserve() *observe {
 	return &observe{
 		webserver: echo.New(),
-		ttsHandle: &ttsHandle{},
+		ttsHandle: NewTTSHandle(),
 	}
 }
 
@@ -63,11 +64,11 @@ func (o *observe) clipboard() {
 		c := exec.Command("/usr/local/bin/clipnotify")
 		err := c.Start()
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println(err)
 		}
 		err = c.Wait()
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println(err)
 		}
 
 		text, err := clipboard.ReadAll()
@@ -90,11 +91,11 @@ func (o *observe) clipboard() {
 		if err != nil {
 			fmt.Println(err)
 		}
+		time.Sleep(1 * time.Second)
 	}
 }
 
 func (o observe) rest() {
-
 	o.webserver.HideBanner = true
 	o.webserver.Use(middleware.Recover())
 	o.webserver.POST("/tts/speech", func(c echo.Context) error {
