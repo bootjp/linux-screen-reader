@@ -1,11 +1,15 @@
 [Unit]
-Description=We provide a screen reader using google text to speech in the Linux desktop.
+Description=Provide a screen reader using google text to speech in the Linux desktop.
+After=network.target
+Wants=network-online.target
 
 [Service]
-Environment="XDG_RUNTIME_DIR=/run/user/1000"
-Environment="DISPLAY=:0"
-Environment="GOOGLE_APPLICATION_CREDENTIALS=/home/bootjp/.secret/gcp.json"
-ExecStart=/home/bootjp/go/bin/linux-screen-reader
 Restart=always
 Type=simple
+ExecStart=/home/bootjp/go/bin/linux-screen-reader
 User=bootjp
+Environment='XDG_RUNTIME_DIR=/run/user/1000' 'DISPLAY=:0' 'GOOGLE_APPLICATION_CREDENTIALS=/home/bootjp/.secret/gcp.json'
+
+[Install]
+WantedBy=multi-user.target
+
