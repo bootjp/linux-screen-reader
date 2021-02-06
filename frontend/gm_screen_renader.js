@@ -25,6 +25,10 @@
             },
             body: new URLSearchParams(data).toString()
         }).catch(e => {
+            if (e.message !== 'Failed to fetch') {
+                return
+            }
+
             // csp blocking, fallback clipboard
             let last = ""
             navigator.clipboard.readText()
